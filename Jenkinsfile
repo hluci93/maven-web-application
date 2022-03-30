@@ -17,6 +17,8 @@ properties([
   ])
 ])
 
+
+//START PIPELINE
 pipeline {
     agent any
 
@@ -65,7 +67,7 @@ stages {
         }
       }
   stage('Build Docker container')
-        {
+        {          
           stages
            {
             stage("Cleanup")
@@ -73,7 +75,6 @@ stages {
             steps
                 { //CLEANUP
                 echo 'Clean system of old images and containers'
-
                 script
                 {
                   def nr_cont = sh 'docker ps -a | wc -l'
@@ -91,7 +92,9 @@ stages {
                 { //Build image and deploy container
                 echo 'Deploy container'                   
                 sh """docker build -t ${params.imageName}:${BUILD_NUMBER} ."""
-                sh """docker run -d -p ${params.EXPOSED_PORT}:${params.INSIDE_PORT} --name ${params.containerName} ${params.imageName}:${BUILD_NUMBER}"""
+                                sh """docker run -d -p ${params.EXPOSED_PORT}:${params.INSIDE_PORT} --name ${params.containerName} ${params.imageName}:${BUILD_NUMBER}"""
+                  
+
                 }
               }
         }
