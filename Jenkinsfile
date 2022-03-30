@@ -3,7 +3,7 @@ def pom_file = "${WORKSPACE}/pom.xml"
 
     parameters
     {
-      string(defaultValue: ${WORKSPACE}'/target/maven-web-application.war', description: 'WAR file used for deploying.', name: 'war_file')
+      string(defaultValue: "${WORKSPACE}"'/target/maven-web-application.war', description: 'WAR file used for deploying.', name: 'war_file')
       string(defaultValue: 'http://192.168.72.199:8082/artifactory/maven_repo', description: 'Repository used for deployment of the Artifact.', name: 'art_repo')
       string(defaultValue: 'https://github.com/hluci93/maven-web-application', description: 'GitHub Repository used for importing configuration.', name: 'git_repo')
       string(defaultValue: 'snapshots', description: 'Repository id used for deployment of the Artifact..', name: 'repo_id')
