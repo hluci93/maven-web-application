@@ -1,9 +1,8 @@
-//Define pom variable used for deploying Artifactory
-def pom_file = "./pom.xml"
+//Define needed parameters
 
 properties([
   parameters([
-    
+      string(defaultValue: './pom.xml', description: 'POM file used for deploying.', name: 'pom_file'),
       string(defaultValue: './target/maven-web-application.war', description: 'WAR file used for deploying.', name: 'war_file'),
       string(defaultValue: 'http://192.168.72.199:8082/artifactory/maven_repo', description: 'Repository used for deployment of the Artifact.', name: 'art_repo'),
       string(defaultValue: 'https://github.com/hluci93/maven-web-application', description: 'GitHub Repository used for importing configuration.', name: 'git_repo'),
@@ -38,7 +37,6 @@ stages {
             steps 
                 {
                 // Get code from GitHub repository
-                echo "${params.git_repo}"
                 git credentialsId: 'c9d8cdef-1edb-4e31-9682-ed6d205f722b', url: "${params.git_repo}"
                 }
         } 
@@ -58,7 +56,7 @@ stages {
             steps
                 { //Deploy to Artifactory
                 echo 'Deploy package to Artifactory'
-                sh 'mvn deploy:deploy-file -DpomFile=${pom_file} -Dfile=${war_file} -Durl=${repo_string} -DrepositoryId=${repo_id} -DuniqueVersion=true'
+                sh 'mvn deploy:deploy-file -DpomFile=${params.pom_file} -Dfile=${params.war_file} -Durl=${params.repo_string} -DrepositoryId=${params.repo_id} -DuniqueVersion=true'
                 }
             }
             
@@ -73,8 +71,8 @@ stages {
             steps
                 { //CLEANUP
                 echo 'Clean system of old images and containers'
-                sh 'docker rm $(docker stop $(docker ps -a --filter "label=type=${filter}" --format="{{.ID}}"))'
-                sh 'docker image prune -f --filter "label=type=${filter}"'
+                sh 'docker rm $(docker stop $(docker ps -a --filter "label=type=${params.filter}" --format="{{.ID}}"))'
+                sh 'docker image prune -f --filter "label=type=${params.filter}"'
                 }
              }
              stage("Build and Deploy Container")
@@ -82,8 +80,8 @@ stages {
                steps
                 { //Build image and deploy container
                 echo 'Deploy container'
-                sh 'docker build -t $imageName:${BUILD_NUMBER} .'
-                sh 'docker run -d -p ${EXPOSED_PORT}:${INSIDE_PORT} --name $containerName $imageName:${BUILD_NUMBER}'
+                sh 'docker build -t ${params.imageName}:${BUILD_NUMBER} .'
+                sh 'docker run -d -p ${params.EXPOSED_PORT}:${params.INSIDE_PORT} --name ${params.containerName} ${params.imageName}:${BUILD_NUMBER}'
                 }
               }
         }
