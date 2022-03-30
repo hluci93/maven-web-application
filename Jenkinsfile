@@ -1,15 +1,19 @@
-pipeline{
+pipeline {
+    agent any
 
-agent any
-
-tools{
-maven 'maven3.8.2'
-
-}
-
-triggers{
-pollSCM('* * * * *')
-}
+    tools {
+        // Will Use maven version 3.8.5 defined with the same name.
+        maven "3.8.5"
+    }
+    
+    options{
+    timestamps()
+    buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '2', numToKeepStr: '5'))
+    parameters([string(defaultValue: '${WORKSPACE}/pom.xml', description: 'POM file used for deploying.', name: 'pom_file'),
+                 string(defaultValue: '${WORKSPACE}/target/maven-web-application.war', description: 'WAR file used for deploying.', name: 'war_file'),
+                 string(defaultValue: 'http://192.168.72.199:8082/artifactory/maven_repo', description: 'Repository used for deployment of the Artifact.', name: 'repo_string'),
+                 string(defaultValue: 'central', description: 'Repository id used for deployment of the Artifact..', name: 'repo_id')])
+    }
 
 options{
 timestamps()
