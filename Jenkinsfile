@@ -73,7 +73,7 @@ stages {
             steps
                 { //CLEANUP
                 echo 'Clean system of old images and containers'
-                sh """docker rm $(docker stop $(docker ps -a --filter "label=type=${params.filter}" --format="{{.ID}}"))"""
+                sh """docker rm $(docker stop $(docker ps -a --filter "label=type= + params.filter + " --format="{{.ID}}"))"""
                 sh '''docker image prune -f --filter "label=type= + params.filter + "'''
                 }
              }
