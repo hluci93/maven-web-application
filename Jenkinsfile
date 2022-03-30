@@ -26,7 +26,7 @@ pipeline {
     }
 
 stages {
-  stage('Get Git Code')
+  stage("Get Git Code")
         {
             steps 
                 {
@@ -34,38 +34,52 @@ stages {
                 git credentialsId: 'c9d8cdef-1edb-4e31-9682-ed6d205f722b', url: "${git_repo}"
                 }
         } 
-  
-
-
-  stage('Build and Deploy Package')
+  stage("Build and Deploy Package")
         {
-            steps
-                {
-                echo 'Building package'
-                sh 'mvn package'
-                }
+          stages{ 
+            stage("Build package")
+              {
+                 steps
+                 {
+                 echo 'Building package'
+                 sh 'mvn package'
+                 }
+              }
+            stage("Deploy Package")    
+            {
             steps
                 { //Deploy to Artifactory
                 echo 'Deploy package to Artifactory'
                 sh 'mvn deploy:deploy-file -DpomFile=${pom_file} -Dfile=${war_file} -Durl=${repo_string} -DrepositoryId=${repo_id} -DuniqueVersion=true'
                 }
+            }
+            
         }
-
+      }
   stage('Build Docker container')
         {
+          stages
+           {
+            stage("Cleanup")
+             { 
             steps
                 { //CLEANUP
                 echo 'Clean system of old images and containers'
                 sh 'docker rm $(docker stop $(docker ps -a --filter "label=type=${filter}" --format="{{.ID}}"))'
                 sh 'docker image prune -f --filter "label=type=${filter}"'
                 }
-            steps
+             }
+             stage("Build and Deploy Container")
+              {
+               steps
                 { //Build image and deploy container
                 echo 'Deploy container'
                 sh 'docker build -t $imageName:${BUILD_NUMBER} .'
                 sh 'docker run -d -p ${EXPOSED_PORT}:${INSIDE_PORT} --name $containerName $imageName:${BUILD_NUMBER}'
                 }
+              }
         }
+      }   
 }//Stages Closing
 
 }//Pipeline closing
