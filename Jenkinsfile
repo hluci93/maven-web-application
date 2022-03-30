@@ -1,3 +1,6 @@
+//Define pom variable used for deploying Artifactory
+def pom_file = "${WORKSPACE}/pom.xml"
+
 pipeline {
     agent any
 
@@ -43,10 +46,6 @@ stages {
                 }
             steps
                 { //Deploy to Artifactory
-                script
-                {
-                def pom_file = "${WORKSPACE}/pom.xml"
-                }
                 echo 'Deploy package to Artifactory'
                 sh 'mvn deploy:deploy-file -DpomFile=${pom_file} -Dfile=${war_file} -Durl=${repo_string} -DrepositoryId=${repo_id} -DuniqueVersion=true'
                 }
