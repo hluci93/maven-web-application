@@ -1,8 +1,9 @@
 //Define pom variable used for deploying Artifactory
 def pom_file = "./pom.xml"
 
-    parameters
-    {
+properties([
+  parameters([
+    
       string(defaultValue: './target/maven-web-application.war', description: 'WAR file used for deploying.', name: 'war_file')
       string(defaultValue: 'http://192.168.72.199:8082/artifactory/maven_repo', description: 'Repository used for deployment of the Artifact.', name: 'art_repo')
       string(defaultValue: 'https://github.com/hluci93/maven-web-application', description: 'GitHub Repository used for importing configuration.', name: 'git_repo')
@@ -14,7 +15,8 @@ def pom_file = "./pom.xml"
       string(defaultValue: '9090', description: 'Exposed port used in this build.', name: 'EXPOSED_PORT')
       string(defaultValue: '8080', description: 'Port defined inside project.', name: 'INSIDE_PORT')
                 // USED FOR DEPLOYMENT TO CONTAINER STAGE                                
-    }
+  ])
+])
 
 pipeline {
     agent any
