@@ -6,7 +6,7 @@ properties([
       string(defaultValue: './target/maven-web-application.war', description: 'WAR file used for deploying.', name: 'war_file'),
       string(defaultValue: 'http://192.168.72.199:8082/artifactory/maven_repo', description: 'Repository used for deployment of the Artifact.', name: 'art_repo'),
       string(defaultValue: 'https://github.com/hluci93/maven-web-application', description: 'GitHub Repository used for importing configuration.', name: 'git_repo'),
-      string(defaultValue: 'snapshots', description: 'Repository id used for deployment of the Artifact..', name: 'repo_id'),
+      string(defaultValue: 'central', description: 'Repository id used for deployment of the Artifact..', name: 'repo_id'),
                  // USED FOR BUILD STAGE
       string(defaultValue: 'maven', description: 'Filter used as a label to remove old versions of images and containers.', name: 'filter'),
       string(defaultValue: 'second_project_maven_image', description: 'Image name used for this build.', name: 'imageName'),
