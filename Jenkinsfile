@@ -12,7 +12,10 @@ pipeline {
     options{
     timestamps()
     buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '2', numToKeepStr: '5'))
-    parameters([string(defaultValue: '${WORKSPACE}/target/maven-web-application.war', description: 'WAR file used for deploying.', name: 'war_file'),
+    }
+    parameters
+    {
+                string(defaultValue: '${WORKSPACE}/target/maven-web-application.war', description: 'WAR file used for deploying.', name: 'war_file'),
                 string(defaultValue: 'http://192.168.72.199:8082/artifactory/maven_repo', description: 'Repository used for deployment of the Artifact.', name: 'art_repo'),
                 string(defaultValue: 'https://github.com/hluci93/maven-web-application', description: 'GitHub Repository used for importing configuration.', name: 'git_repo'),
                 string(defaultValue: 'snapshots', description: 'Repository id used for deployment of the Artifact..', name: 'repo_id'),
@@ -21,7 +24,7 @@ pipeline {
                 string(defaultValue: 'second_project_maven_image', description: 'Image name used for this build.', name: 'imageName'),
                 string(defaultValue: 'second_project_maven_container', description: 'Container name used for this build.', name: 'containerName'),
                 string(defaultValue: '9090', description: 'Exposed port used in this build.', name: 'EXPOSED_PORT'),
-                string(defaultValue: '8080', description: 'Port defined inside project.', name: 'INSIDE_PORT')])
+                string(defaultValue: '8080', description: 'Port defined inside project.', name: 'INSIDE_PORT')
                 // USED FOR DEPLOYMENT TO CONTAINER STAGE                                
     }
 
