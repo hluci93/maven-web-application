@@ -36,6 +36,7 @@ stages {
             steps 
                 {
                 // Get code from GitHub repository
+                echo "${params.git_repo}"
                 git credentialsId: 'c9d8cdef-1edb-4e31-9682-ed6d205f722b', url: "${params.git_repo}"
                 }
         } 
