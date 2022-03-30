@@ -78,7 +78,8 @@ stages {
                 script
                 {
                   def nr_cont = sh 'docker ps -a | wc -l'
-                  if ( ${nr_cont} != 1){
+                  if ( nr_cont != 1){
+                      echo "test"
                       sh """docker rm \$(docker stop \$(docker ps -a --filter "label=type=${params.filter}" --format="{{.ID}}"))"""
                       }
                  sh """docker image prune -f --filter \"label=type=${params.filter}\""""
