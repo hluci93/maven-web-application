@@ -58,7 +58,7 @@ stages {
             steps
                 { //Deploy to Artifactory
                 echo 'Deploy package to Artifactory'
-                sh """mvn deploy:deploy-file -DpomFile=${params.pom_file} -Dfile=${params.war_file} -Durl=${params.repo_string} -DrepositoryId=${params.repo_id} -DuniqueVersion=true"""
+                sh """mvn deploy:deploy-file -DpomFile=${params.pom_file} -Dfile=${params.war_file} -Durl=${params.art_repo} -DrepositoryId=${params.repo_id} -DuniqueVersion=true"""
                 }
             }
             
