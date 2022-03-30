@@ -28,7 +28,7 @@ stages {
             steps 
                 {
                 // Get code from GitHub repository
-                git credentialsId: 'c9d8cdef-1edb-4e31-9682-ed6d205f722b', url: ${git_repo}
+                git credentialsId: 'c9d8cdef-1edb-4e31-9682-ed6d205f722b', url: "${git_repo}"
                 }
         } 
   
@@ -42,7 +42,7 @@ stages {
                 }
             steps
                 { //Deploy to Artifactory
-                def pom_file = '${WORKSPACE}/pom.xml'
+                def pom_file = "${WORKSPACE}/pom.xml"
                 sh 'mvn deploy:deploy-file -DpomFile=${pom_file} -Dfile=${war_file} -Durl=${repo_string} -DrepositoryId=${repo_id} -DuniqueVersion=true'
                 }
         }
