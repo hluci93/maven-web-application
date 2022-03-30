@@ -38,11 +38,16 @@ stages {
         {
             steps
                 {
+                echo 'Building package'
                 sh 'mvn package'
                 }
             steps
                 { //Deploy to Artifactory
+                script
+                {
                 def pom_file = "${WORKSPACE}/pom.xml"
+                }
+                echo 'Deploy package to Artifactory'
                 sh 'mvn deploy:deploy-file -DpomFile=${pom_file} -Dfile=${war_file} -Durl=${repo_string} -DrepositoryId=${repo_id} -DuniqueVersion=true'
                 }
         }
@@ -51,11 +56,13 @@ stages {
         {
             steps
                 { //CLEANUP
+                echo 'Clean system of old images and containers'
                 sh 'docker rm $(docker stop $(docker ps -a --filter "label=type=${filter}" --format="{{.ID}}"))'
                 sh 'docker image prune -f --filter "label=type=${filter}"'
                 }
             steps
                 { //Build image and deploy container
+                echo 'Deploy container'
                 sh 'docker build -t $imageName:${BUILD_NUMBER} .'
                 sh 'docker run -d -p ${EXPOSED_PORT}:${INSIDE_PORT} --name $containerName $imageName:${BUILD_NUMBER}'
                 }
