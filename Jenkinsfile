@@ -58,7 +58,7 @@ stages {
             steps
                 { //Deploy to Artifactory
                 echo 'Deploy package to Artifactory'
-                sh ''mvn deploy:deploy-file -DpomFile=${params.pom_file} -Dfile=${params.war_file} -Durl=${params.repo_string} -DrepositoryId=${params.repo_id} -DuniqueVersion=true''
+                sh """mvn deploy:deploy-file -DpomFile=${params.pom_file} -Dfile=${params.war_file} -Durl=${params.repo_string} -DrepositoryId=${params.repo_id} -DuniqueVersion=true"""
                 }
             }
             
@@ -73,8 +73,8 @@ stages {
             steps
                 { //CLEANUP
                 echo 'Clean system of old images and containers'
-                sh '''docker rm $(docker stop $(docker ps -a --filter "label=type=${params.filter}" --format="{{.ID}}"))'''
-                sh '''docker image prune -f --filter "label=type=${params.filter}"'''
+                sh """docker rm $(docker stop $(docker ps -a --filter "label=type=${params.filter}" --format="{{.ID}}"))"""
+                sh '''docker image prune -f --filter "label=type= + params.filter + "'''
                 }
              }
              stage("Build and Deploy Container")
@@ -82,8 +82,8 @@ stages {
                steps
                 { //Build image and deploy container
                 echo 'Deploy container'
-                sh '''docker build -t ${params.imageName}:${BUILD_NUMBER} .'''
-                sh '''docker run -d -p ${params.EXPOSED_PORT}:${params.INSIDE_PORT} --name ${params.containerName} ${params.imageName}:${BUILD_NUMBER}'''
+                sh """docker build -t ${params.imageName}:${BUILD_NUMBER} """
+                sh """docker run -d -p ${params.EXPOSED_PORT}:${params.INSIDE_PORT} --name ${params.containerName} ${params.imageName}:${BUILD_NUMBER"""
                 }
               }
         }
