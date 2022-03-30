@@ -23,6 +23,8 @@ pipeline {
     tools {
         // Will Use maven version 3.8.5 defined with the same name.
         maven "3.8.5"
+        //Git Default build
+        git "Default"
     }
     
     options{
@@ -56,7 +58,7 @@ stages {
             steps
                 { //Deploy to Artifactory
                 echo 'Deploy package to Artifactory'
-                sh '''mvn deploy:deploy-file -DpomFile=${params.pom_file} -Dfile=${params.war_file} -Durl=${params.repo_string} -DrepositoryId=${params.repo_id} -DuniqueVersion=true'''
+                sh ''mvn deploy:deploy-file -DpomFile=${params.pom_file} -Dfile=${params.war_file} -Durl=${params.repo_string} -DrepositoryId=${params.repo_id} -DuniqueVersion=true''
                 }
             }
             
