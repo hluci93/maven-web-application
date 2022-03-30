@@ -9,71 +9,57 @@ pipeline {
     options{
     timestamps()
     buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '2', numToKeepStr: '5'))
-    parameters([string(defaultValue: '${WORKSPACE}/pom.xml', description: 'POM file used for deploying.', name: 'pom_file'),
-                 string(defaultValue: '${WORKSPACE}/target/maven-web-application.war', description: 'WAR file used for deploying.', name: 'war_file'),
-                 string(defaultValue: 'http://192.168.72.199:8082/artifactory/maven_repo', description: 'Repository used for deployment of the Artifact.', name: 'repo_string'),
-                 string(defaultValue: 'central', description: 'Repository id used for deployment of the Artifact..', name: 'repo_id')])
+    parameters([ string(defaultValue: '${WORKSPACE}/target/maven-web-application.war', description: 'WAR file used for deploying.', name: 'war_file'),
+                 string(defaultValue: 'http://192.168.72.199:8082/artifactory/maven_repo', description: 'Repository used for deployment of the Artifact.', name: 'art_repo'),
+                 string(defaultValue: 'https://github.com/hluci93/maven-web-application', description: 'GitHub Repository used for importing configuration.', name: 'git_repo')
+                 string(defaultValue: 'snapshots', description: 'Repository id used for deployment of the Artifact..', name: 'repo_id')
+                 // USED FOR BUILD STAGE
+                string(defaultValue: 'maven', description: 'Filter used as a label to remove old versions of images and containers.', name: 'filter')
+                string(defaultValue: 'second_project_maven_image', description: 'Image name used for this build.', name: 'imageName')
+                string(defaultValue: 'second_project_maven_container', description: 'Container name used for this build.', name: 'containerName')
+                string(defaultValue: '9090', description: 'Exposed port used in this build.', name: 'EXPOSED_PORT')
+                string(defaultValue: '8080', description: 'Port defined inside project.', name: 'INSIDE_PORT')])
+                // USED FOR DEPLOYMENT TO CONTAINER STAGE                                
     }
 
-options{
-timestamps()
-buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5'))
-}
+stages {
+  stage('Get Git Code')
+        {
+            steps 
+                {
+                // Get code from GitHub repository
+                git credentialsId: 'c9d8cdef-1edb-4e31-9682-ed6d205f722b', url: ${git_repo}
+                }
+        } 
+  
 
-stages{
 
-  stage('CheckOutCode'){
-    steps{
-    git branch: 'development', credentialsId: '957b543e-6f77-4cef-9aec-82e9b0230975', url: 'https://github.com/devopstrainingblr/maven-web-application-1.git'
-	
-	}
-  }
-  
-  stage('Build'){
-  steps{
-  sh  "mvn clean package"
-  }
-  }
-/*
- stage('ExecuteSonarQubeReport'){
-  steps{
-  sh  "mvn clean sonar:sonar"
-  }
-  }
-  
-  stage('UploadArtifactsIntoNexus'){
-  steps{
-  sh  "mvn clean deploy"
-  }
-  }
-  
-  stage('DeployAppIntoTomcat'){
-  steps{
-  sshagent(['bfe1b3c1-c29b-4a4d-b97a-c068b7748cd0']) {
-   sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@35.154.190.162:/opt/apache-tomcat-9.0.50/webapps/"    
-  }
-  }
-  }
-  */
+  stage('Build and Deploy Package')
+        {
+            steps
+                {
+                sh 'mvn package'
+                }
+            steps
+                { //Deploy to Artifactory
+                def pom_file = '${WORKSPACE}/pom.xml'
+                sh 'mvn deploy:deploy-file -DpomFile=${pom_file} -Dfile=${war_file} -Durl=${repo_string} -DrepositoryId=${repo_id} -DuniqueVersion=true'
+                }
+        }
+
+  stage('Build Docker container')
+        {
+            steps
+                { //CLEANUP
+                sh 'docker rm $(docker stop $(docker ps -a --filter "label=type=${filter}" --format="{{.ID}}"))'
+                sh 'docker image prune -f --filter "label=type=${filter}"'
+                }
+            steps
+                { //Build image and deploy container
+                sh 'docker build -t $imageName:${BUILD_NUMBER} .'
+                sh 'docker run -d -p ${EXPOSED_PORT}:${INSIDE_PORT} --name $containerName $imageName:${BUILD_NUMBER}'
+                }
+        }
 }//Stages Closing
-
-post{
-
- success{
- emailext to: 'devopstrainingblr@gmail.com,mithuntechnologies@yahoo.com',
-          subject: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
-          body: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
-          replyTo: 'devopstrainingblr@gmail.com'
- }
- 
- failure{
- emailext to: 'devopstrainingblr@gmail.com,mithuntechnologies@yahoo.com',
-          subject: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
-          body: "Pipeline Build is over .. Build # is ..${env.BUILD_NUMBER} and Build status is.. ${currentBuild.result}.",
-          replyTo: 'devopstrainingblr@gmail.com'
- }
- 
-}
-
 
 }//Pipeline closing
