@@ -1,5 +1,5 @@
 //Define pom variable used for deploying Artifactory
-def pom_file = "${WORKSPACE}/pom.xml"
+def pom_file = "./pom.xml"
 
     parameters
     {
