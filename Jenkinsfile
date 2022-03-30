@@ -74,7 +74,7 @@ stages {
                 { //CLEANUP
                 echo 'Clean system of old images and containers'
                 sh """docker rm \$(docker stop \$(docker ps -a --filter "label=type=  ${params.filter} " --format="{{.ID}}"))"""
-                sh """docker image prune -f --filter "label=type= ${params.filter} """"
+                sh """docker image prune -f --filter \"label=type= ${params.filter} \""""
                 }
              }
              stage("Build and Deploy Container")
@@ -83,7 +83,7 @@ stages {
                 { //Build image and deploy container
                 echo 'Deploy container'
                 sh """docker build -t ${params.imageName}:${BUILD_NUMBER} """
-                sh """docker run -d -p ${params.EXPOSED_PORT}:${params.INSIDE_PORT} --name ${params.containerName} ${params.imageName}:${BUILD_NUMBER"""
+                sh """docker run -d -p ${params.EXPOSED_PORT}:${params.INSIDE_PORT} --name ${params.containerName} ${params.imageName}:${BUILD_NUMBER}"""
                 }
               }
         }
