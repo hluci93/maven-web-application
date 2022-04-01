@@ -77,7 +77,7 @@ stages {
                 echo 'Clean system of old images and containers'
                 script
                 {
-                  def nr_cont = sh 'docker ps -a | wc -l'
+                  def nr_cont = sh """docker ps -a --filter "label=type=${params.filter}" | wc -l"""
                   if ( nr_cont != 1){
                       echo "test"
                       sh """docker rm \$(docker stop \$(docker ps -a --filter "label=type=${params.filter}" --format="{{.ID}}"))"""
