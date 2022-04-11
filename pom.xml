@@ -96,13 +96,13 @@
   <distributionManagement>
     <repository>
         <id>central</id>
-        <name>debian-releases</name>
-        <url>http://192.168.72.199:8082/artifactory/maven_repo/</url>
+        <name>master-releases</name>
+        <url>http://192.168.72.199:8040/artifactory/maven_repo/</url>
     </repository>
     <snapshotRepository>
         <id>snapshots</id>
-        <name>debian-snapshots</name>
-        <url>http://192.168.72.199:8082/artifactory/maven_repo/</url>
+        <name>master-snapshots</name>
+        <url>http://192.168.72.199:8040/artifactory/maven_repo/</url>
     </snapshotRepository>
 </distributionManagement>
 	
