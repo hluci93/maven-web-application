@@ -97,12 +97,12 @@
     <repository>
         <id>central</id>
         <name>master-releases</name>
-        <url>http://192.168.72.199:8040/artifactory/maven_repo/</url>
+        <url>http://192.168.72.199:8082/artifactory/maven_repo/</url>
     </repository>
     <snapshotRepository>
         <id>snapshots</id>
         <name>master-snapshots</name>
-        <url>http://192.168.72.199:8040/artifactory/maven_repo/</url>
+        <url>http://192.168.72.199:8082/artifactory/maven_repo/</url>
     </snapshotRepository>
 </distributionManagement>
 	
